@@ -16,13 +16,17 @@ type Props = {
   workspaceId: string;
   currentUserId: string;
 };
+const supabase = createClient();
 
 export default function Chat({ workspaceId, currentUserId }: Props) {
+  console.log("Chat 컴포넌트 렌더링:", workspaceId);
   const [messages, setMessages] = useState<Message[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const supabase = createClient();
+  // const supabase = createClient();
 
   useEffect(() => {
+    const channelName = `chat-${workspaceId}-${Date.now()}`;
+
     const fetchMessages = async () => {
       const { data } = await supabase
         .from("messages")
@@ -35,24 +39,22 @@ export default function Chat({ workspaceId, currentUserId }: Props) {
 
     const channel = supabase
       .channel(`chat-${workspaceId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
-          filter: `workspace_id=eq.${workspaceId}`,
-        },
-        async (payload) => {
-          const { data } = await supabase
-            .from("messages")
-            .select("*, profiles(name, email)")
-            .eq("id", payload.new.id)
-            .single();
-          if (data) setMessages((prev) => [...prev, data as Message]);
-        },
-      )
-      .subscribe();
+      .on("broadcast", { event: "new_message" }, async (payload) => {
+        const { data } = await supabase
+          .from("messages")
+          .select("*, profiles(name, email)")
+          .eq("id", payload.payload.id)
+          .single();
+        if (data) {
+          setMessages((prev) => {
+            if (prev.find((m) => m.id === data.id)) return prev;
+            return [...prev, data as Message];
+          });
+        }
+      })
+      .subscribe((status) => {
+        console.log("Realtime 상태:", status);
+      });
 
     return () => {
       supabase.removeChannel(channel);
@@ -60,6 +62,7 @@ export default function Chat({ workspaceId, currentUserId }: Props) {
   }, [workspaceId]);
 
   useEffect(() => {
+    console.log("useEffect123123 실행:", workspaceId);
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 

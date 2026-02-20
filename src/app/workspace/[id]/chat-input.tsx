@@ -1,27 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
+
+const supabase = createClient();
 
 type Props = { workspaceId: string };
 
 export default function ChatInput({ workspaceId }: Props) {
   const [content, setContent] = useState("");
-  const supabase = createClient();
+  const sendingRef = useRef(false);
 
   const sendMessage = async () => {
-    if (!content.trim()) return;
+    if (!content.trim() || sendingRef.current) return;
+    sendingRef.current = true;
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      sendingRef.current = false;
+      return;
+    }
 
-    await supabase.from("messages").insert({
-      workspace_id: workspaceId,
-      user_id: user.id,
-      content: content.trim(),
-    });
+    await supabase.from("profiles").upsert({ id: user.id, email: user.email });
+
+    const { data } = await supabase
+      .from("messages")
+      .insert({
+        workspace_id: workspaceId,
+        user_id: user.id,
+        content: content.trim(),
+      })
+      .select()
+      .single();
+
+    if (data) {
+      await supabase.channel(`chat-${workspaceId}`).send({
+        type: "broadcast",
+        event: "new_message",
+        payload: { id: data.id },
+      });
+    }
+
     setContent("");
+    sendingRef.current = false;
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
