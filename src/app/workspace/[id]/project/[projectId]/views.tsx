@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import CalendarView from "./calendar-view";
 import GanttView from "./gantt-view";
 import ItemPanel from "./item-panel";
+import KanbanView from "./kanban-view";
 
 type Status = { id: string; name: string; color: string; order: number };
 type Item = {
@@ -19,11 +20,12 @@ type Item = {
 };
 type Props = { statuses: Status[]; items: Item[] };
 
-export default function Views({ statuses, items }: Props) {
+export default function Views({ statuses, items: initialItems }: Props) {
   const [view, setView] = useState<"테이블" | "칸반" | "캘린더" | "간트">(
     "테이블",
   );
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+  const [items, setItems] = useState(initialItems);
   //   const [mounted, setMounted] = useState(false);
 
   //   useEffect(() => {
@@ -39,7 +41,8 @@ export default function Views({ statuses, items }: Props) {
           <button
             key={v}
             onClick={() => setView(v)}
-            className={`px-4 py-2 text-sm rounded-lg border transition-colors ${
+            style={{ cursor: "pointer" }}
+            className={`px-4 py-2 text-sm rounded-lg border transition-colors  ${
               view === v
                 ? "bg-black text-white border-black"
                 : "bg-white hover:border-black"
@@ -74,8 +77,9 @@ export default function Views({ statuses, items }: Props) {
                 items.map((item) => (
                   <tr
                     key={item.id}
-                    className="border-b last:border-0 hover:bg-gray-50 cursor-pointer"
-                    onMouseDown={() => setSelectedItem(item)}
+                    className="border-b last:border-0 hover:bg-gray-50 "
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setSelectedItem(item)}
                   >
                     <td className="px-4 py-3">{item.title}</td>
                     <td className="px-4 py-3">
@@ -117,46 +121,12 @@ export default function Views({ statuses, items }: Props) {
       )}
 
       {view === "칸반" && (
-        <div className="flex gap-4 overflow-x-auto pb-4">
-          {statuses.map((status) => {
-            const statusItems = items.filter((i) => i.status_id === status.id);
-            return (
-              <div key={status.id} className="min-w-64 flex-shrink-0">
-                <div className="flex items-center gap-2 mb-3">
-                  <div
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: status.color }}
-                  />
-                  <span className="text-sm font-medium">{status.name}</span>
-                  <span className="text-xs text-gray-400 ml-auto">
-                    {statusItems.length}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-2">
-                  {statusItems.map((item) => (
-                    <div
-                      key={item.id}
-                      className="bg-white border rounded-xl px-4 py-3 text-sm hover:border-black transition-colors cursor-pointer"
-                      onClick={() => setSelectedItem(item)}
-                    >
-                      <p className="font-medium">{item.title}</p>
-                      {item.end_at && (
-                        <p className="text-xs text-gray-400 mt-1">
-                          {new Date(item.end_at).toLocaleDateString("ko-KR")}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                  {statusItems.length === 0 && (
-                    <div className="border border-dashed rounded-xl px-4 py-6 text-center text-xs text-gray-400">
-                      없음
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <KanbanView
+          statuses={statuses}
+          items={items}
+          onSelectItem={setSelectedItem}
+          onItemsChange={setItems}
+        />
       )}
 
       {view === "캘린더" && <CalendarView items={items} statuses={statuses} />}

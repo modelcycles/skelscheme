@@ -68,14 +68,38 @@ export default function ItemPanel({ item, statuses, onClose }: Props) {
   return (
     <>
       {/* 배경 오버레이 */}
-      <div className="fixed inset-0 bg-black/20 z-40" onClick={onClose} />
+      <div
+        className="fixed inset-0 bg-black/20 z-40"
+        onClick={onClose}
+        style={{
+          position: "fixed",
+          inset: 0,
+          backgroundColor: "rgba(0,0,0,0.2)",
+          zIndex: 40,
+        }}
+      />
 
       {/* 패널 */}
-      <div className="fixed right-0 top-0 h-full w-full max-w-lg bg-white shadow-2xl z-50 flex flex-col">
+      <div
+        className="fixed right-0 top-0 h-screen w-[480px] bg-white shadow-2xl z-50 flex flex-col"
+        style={{
+          position: "fixed",
+          right: 0,
+          top: 0,
+          height: "100vh",
+          width: "480px",
+          backgroundColor: "white",
+          boxShadow: "-4px 0 24px rgba(0,0,0,0.1)",
+          zIndex: 50,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         {/* 헤더 */}
         <div className="flex items-center justify-between px-6 py-4 border-b">
           <button
             onClick={onClose}
+            style={{ cursor: "pointer" }}
             className="text-gray-400 hover:text-black text-sm"
           >
             ✕ 닫기
@@ -83,14 +107,16 @@ export default function ItemPanel({ item, statuses, onClose }: Props) {
           <div className="flex gap-2">
             <button
               onClick={deleteItem}
-              className="text-red-400 hover:text-red-600 text-sm px-3 py-1 rounded-lg border border-red-200 hover:border-red-400 transition-colors"
+              style={{ cursor: "pointer" }}
+              className="text-red-400 hover:text-red-600 text-sm px-3 py-1 rounded-lg border border-red-200 hover:border-red-400 transition-colors "
             >
               삭제
             </button>
             <button
               onClick={save}
+              style={{ cursor: "pointer" }}
               disabled={saving}
-              className="bg-black text-white text-sm px-3 py-1 rounded-lg hover:bg-gray-800 disabled:opacity-50"
+              className="bg-black text-white text-sm px-3 py-1 rounded-lg hover:bg-gray-800 disabled:opacity-50 "
             >
               {saving ? "저장 중..." : "저장"}
             </button>
@@ -115,12 +141,12 @@ export default function ItemPanel({ item, statuses, onClose }: Props) {
                 <button
                   key={s.id}
                   onClick={() => setStatusId(s.id)}
-                  className={`px-3 py-1 rounded-full text-white text-xs transition-opacity ${
+                  className={`px-3 py-1 rounded-full text-white text-xs transition-opacity  ${
                     statusId === s.id
                       ? "opacity-100 ring-2 ring-offset-1"
                       : "opacity-50"
                   }`}
-                  style={{ backgroundColor: s.color }}
+                  style={{ backgroundColor: s.color, cursor: "pointer" }}
                 >
                   {s.name}
                 </button>
@@ -138,6 +164,7 @@ export default function ItemPanel({ item, statuses, onClose }: Props) {
                 <button
                   key={p}
                   onClick={() => setPriority(p)}
+                  style={{ cursor: "pointer" }}
                   className={`px-3 py-1 rounded-lg text-xs border transition-colors ${
                     priority === p
                       ? "bg-black text-white border-black"
