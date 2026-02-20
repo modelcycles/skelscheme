@@ -32,15 +32,16 @@ export default function ChatInput({ workspaceId }: Props) {
   };
 
   return (
-    <div style={{ padding: "0 16px 16px" }}>
+    <div style={{ padding: "0 24px 24px" }}>
       <div
         style={{
-          backgroundColor: "#40444b",
+          border: "1px solid #e5e5e3",
           borderRadius: "8px",
           display: "flex",
           alignItems: "flex-end",
           gap: "8px",
           padding: "10px 16px",
+          backgroundColor: "#f7f7f5",
         }}
       >
         <textarea
@@ -54,7 +55,7 @@ export default function ChatInput({ workspaceId }: Props) {
             backgroundColor: "transparent",
             border: "none",
             outline: "none",
-            color: "#dcddde",
+            color: "#1a1a1a",
             fontSize: "14px",
             resize: "none",
             lineHeight: "1.5",
@@ -65,9 +66,9 @@ export default function ChatInput({ workspaceId }: Props) {
         <button
           onClick={sendMessage}
           style={{
-            backgroundColor: "#5865f2",
+            backgroundColor: "#1a1a1a",
             border: "none",
-            borderRadius: "4px",
+            borderRadius: "6px",
             color: "white",
             padding: "6px 12px",
             fontSize: "13px",
@@ -81,7 +82,7 @@ export default function ChatInput({ workspaceId }: Props) {
       <p
         style={{
           fontSize: "11px",
-          color: "#72767d",
+          color: "#c0c0c0",
           marginTop: "4px",
           paddingLeft: "4px",
         }}

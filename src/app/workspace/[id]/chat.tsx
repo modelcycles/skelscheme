@@ -23,7 +23,6 @@ export default function Chat({ workspaceId, currentUserId }: Props) {
   const supabase = createClient();
 
   useEffect(() => {
-    // 기존 메시지 불러오기
     const fetchMessages = async () => {
       const { data } = await supabase
         .from("messages")
@@ -34,7 +33,6 @@ export default function Chat({ workspaceId, currentUserId }: Props) {
     };
     fetchMessages();
 
-    // 실시간 구독
     const channel = supabase
       .channel(`chat-${workspaceId}`)
       .on(
@@ -77,23 +75,30 @@ export default function Chat({ workspaceId, currentUserId }: Props) {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        backgroundColor: "#ffffff",
+      }}
+    >
       {/* 메시지 목록 */}
       <div
         style={{
           flex: 1,
           overflowY: "auto",
-          padding: "16px",
+          padding: "24px",
           display: "flex",
           flexDirection: "column",
-          gap: "4px",
+          gap: "2px",
         }}
       >
         {messages.length === 0 && (
           <div
             style={{
               textAlign: "center",
-              color: "#6b7280",
+              color: "#9b9b9b",
               fontSize: "14px",
               marginTop: "32px",
             }}
@@ -108,7 +113,7 @@ export default function Chat({ workspaceId, currentUserId }: Props) {
           const showName = !isSameUser;
 
           return (
-            <div key={msg.id} style={{ marginTop: showName ? "16px" : "2px" }}>
+            <div key={msg.id} style={{ marginTop: showName ? "16px" : "1px" }}>
               {showName && (
                 <div
                   style={{
@@ -116,19 +121,19 @@ export default function Chat({ workspaceId, currentUserId }: Props) {
                     alignItems: "baseline",
                     gap: "8px",
                     marginBottom: "4px",
-                    paddingLeft: "48px",
+                    paddingLeft: "44px",
                   }}
                 >
                   <span
                     style={{
-                      fontSize: "14px",
+                      fontSize: "13px",
                       fontWeight: 600,
-                      color: isMe ? "#5865f2" : "#fff",
+                      color: isMe ? "#5865f2" : "#1a1a1a",
                     }}
                   >
                     {getDisplayName(msg)}
                   </span>
-                  <span style={{ fontSize: "11px", color: "#72767d" }}>
+                  <span style={{ fontSize: "11px", color: "#c0c0c0" }}>
                     {formatTime(msg.created_at)}
                   </span>
                 </div>
@@ -137,8 +142,7 @@ export default function Chat({ workspaceId, currentUserId }: Props) {
                 style={{
                   display: "flex",
                   alignItems: "flex-start",
-                  gap: "12px",
-                  paddingLeft: "16px",
+                  gap: "10px",
                 }}
               >
                 {showName ? (
@@ -147,13 +151,13 @@ export default function Chat({ workspaceId, currentUserId }: Props) {
                       width: "32px",
                       height: "32px",
                       borderRadius: "50%",
-                      backgroundColor: isMe ? "#5865f2" : "#747f8d",
+                      backgroundColor: isMe ? "#5865f2" : "#e0e0e0",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: "14px",
+                      fontSize: "13px",
                       fontWeight: 600,
-                      color: "white",
+                      color: isMe ? "white" : "#555",
                       flexShrink: 0,
                     }}
                   >
@@ -165,7 +169,7 @@ export default function Chat({ workspaceId, currentUserId }: Props) {
                 <div
                   style={{
                     fontSize: "14px",
-                    color: "#dcddde",
+                    color: "#1a1a1a",
                     lineHeight: "1.5",
                     padding: "2px 0",
                     wordBreak: "break-word",
@@ -181,7 +185,6 @@ export default function Chat({ workspaceId, currentUserId }: Props) {
         <div ref={bottomRef} />
       </div>
 
-      {/* 입력창 */}
       <ChatInput workspaceId={workspaceId} />
     </div>
   );
